@@ -16,17 +16,23 @@ def heuristic(initial_state):
 
 def solution(initial_state):
     root_node = initial_state
-    root_node_key = tuple(root_node[0:8])
+    root_node[12] = heuristic(root_node)
+    root_node[13] = root_node[12]
+    root_node_key = tuple(root_node[0:9])
     open = dict()
     closed = dict()
     open[root_node_key] = root_node
-    heap_open = [(open[k][13], k) for k in open]
+    heap_open = [(open[root_node_key][13], root_node_key)]
     heapq.heapify(heap_open)
     row_move = [1, 0, -1, 0]
     col_move = [0, -1, 0, 1]
     while open:
-        min_f, best_node_key = heapq.heappop(heap_open)
-        best_node = open[best_node_key]
+        flag = True
+        while flag:
+            min_f, best_node_key = heapq.heappop(heap_open)
+            if open[best_node_key]:
+                best_node = open[best_node_key]
+                flag = False
         if best_node[12] == 0:
             print(best_node[11])
             return
@@ -42,18 +48,20 @@ def solution(initial_state):
                 tmp = child_node[new_point]
                 child_node[new_point] = 35
                 child_node[old_point] = tmp
-                child_node_key = tuple(child_node[0:8])
-                if child_node_key in open:
-                    continue
-                if child_node_key in closed:
-                    continue
+                child_node_key = tuple(child_node[0:9])
                 child_node[9] = new_i
                 child_node[10] = new_j
                 child_node[11] = best_node[11] + 1   # g
                 child_node[12] = heuristic(child_node)    # h
                 child_node[13] = child_node[11] + child_node[12]   # f
-                open[child_node_key] = child_node
-                heapq.heappush(heap_open, (child_node[13], child_node_key))
+                if child_node_key in open:
+                    if open[child_node_key][13] <= child_node[13]:
+                        continue
+                elif child_node_key in closed:
+                    continue
+                else:
+                    open[child_node_key] = child_node
+                    heapq.heappush(heap_open, (child_node[13], child_node_key))
 
 def solvable(initial_state):
     inversions = 0
