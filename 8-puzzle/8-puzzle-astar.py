@@ -15,11 +15,12 @@ def heuristic(state, final_state):
     for a in range(9):
         if state[a] == 0:
             continue
-        for b in range(9):
-            if state[a] == final_state[b]:
-                row_diff = a // 3 - b // 3
-                col_diff = a % 3 - b % 3
-                h += abs(row_diff) + abs(col_diff)
+        else:
+            # ((state[a]-1)//3, (state[a]-1)%3)는 수 state[a]의 목표 상태에서의 위치를 나타낸다.
+            # (a // 3, a % 3)는 수 state[a]의 현재 상태에서의 위치를 나타낸다.
+            row_diff = (state[a] - 1) // 3 - a // 3
+            col_diff = (state[a] - 1) % 3 - a % 3
+            h += abs(row_diff) + abs(col_diff)
     return h
 
 def get_position(state):
